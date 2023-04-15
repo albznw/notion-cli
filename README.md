@@ -77,7 +77,3 @@ Please make sure to update tests as appropriate.
 # License
 
 [MIT](./LICENSE)
-
-```
-
-```
