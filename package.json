@@ -1,0 +1,24 @@
+{
+  "name": "notion-cli",
+  "version": "1.0.0",
+  "description": "Interact with my Notion workspace using the command line",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albznw/notion-cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albznw/notion-cli/issues"
+  },
+  "homepage": "https://github.com/albznw/notion-cli#readme",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
