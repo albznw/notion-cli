@@ -59,7 +59,13 @@ If the build was unsuccessful, you may need to set the `pkg` options manually. R
 This example demonstrates how to use the CLI tool to sort the options of a multi-select property field of an entry in a Notion database. The following example sorts all the options of a property field named `Tags` and will sort the tags on all entries in that database in alphabetical order.
 
 ```sh
-nocli sort-entry-tags "https://www.notion.so/albzn/0b24cbe28c3b4f5da11d47ace65606e0?v=52fd3a07a98f438b959028d5528bf53e&pvs=4" --sortmode "alpha" --field "Tags"
+nocli sort-entry-tags "https://www.notion.so/username/0b24cbe28c3b4f5da11d47ace65606e0" --sortmode "alpha" --field "Tags"
+```
+
+For more help on how to run the command, you can run:
+
+```sh
+nocli --help
 ```
 
 # Contributing
