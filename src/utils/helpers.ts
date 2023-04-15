@@ -30,6 +30,7 @@ export const parseNotionIDFromURL = (url: string) => {
   }
 
   let id = url.split('/').pop();
+  id = id?.split('-').pop();
   id = id?.split('?')[0];
   return id;
 };
