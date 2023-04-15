@@ -4,7 +4,7 @@
   "description": "Interact with my Notion workspace using the command line",
   "main": "nocli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --coverage",
     "start": "tsc && node dist/nocli.js"
   },
   "repository": {
@@ -20,7 +20,10 @@
   "homepage": "https://github.com/albznw/notion-cli#readme",
   "devDependencies": {
     "@types/commander": "^2.12.2",
+    "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
