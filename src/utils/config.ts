@@ -12,14 +12,13 @@ const loadConfig = () => {
     return config;
   }
 
-  console.log('Loading config...');
-
   // Load environment variables from .env file
   dotenv.config();
 
   config = {
     version: '0.0.1',
-    description: 'test',
+    description:
+      'Using this CLI tool you can sort the tags on your notion database entries',
   };
 
   return config;

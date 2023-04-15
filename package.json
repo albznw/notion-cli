@@ -5,7 +5,8 @@
   "main": "nocli.js",
   "scripts": {
     "test": "jest --coverage",
-    "start": "tsc && node dist/nocli.js"
+    "start": "tsc && node dist/nocli.js",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

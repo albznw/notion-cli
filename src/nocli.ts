@@ -1,6 +1,9 @@
 import { Command } from 'commander';
 import loadConfig from './utils/config';
-import { sortMultiSelectOnDatabaseEntries } from './commands/sort-tags';
+import {
+  sortMultiSelectOnDatabaseEntries,
+  sortMultiSelectOnDatabase,
+} from './commands/sort-tags';
 import { parseToNotionID } from './utils/helpers';
 import { SortMode } from './commands/sort-tags';
 
@@ -12,9 +15,13 @@ const program = new Command();
 // Configure the CLI tool
 program.version(config.version).description(config.description);
 
-// Define the tag sort command
+/**
+ * Define the tag sort command for the database entries
+ * @param database The database ID
+ * @param options The options for the command
+ */
 program
-  .command('sort-tags <database>')
+  .command('sort-entry-tags <database>')
   .description('Sorts the tags on your notion database entries')
   .option(
     '-s, --sortmode <sortmode>',
@@ -53,6 +60,36 @@ program
     }
 
     await sortMultiSelectOnDatabaseEntries(dbID, columnname, sortMode);
+  });
+
+/**
+ * Define the tag sort command
+ * @param database The database ID
+ */
+program
+  .command('sort-tags <database>')
+  .description(
+    'Sorts the multiselect tags on your notion database in alphabetical order'
+  )
+  .option(
+    '-c, --column <columnname>',
+    'The name of the column that you want sorted. Defaults to "Tags"',
+    'Tags'
+  )
+  .action(async (database: string, options: any) => {
+    const dbID = parseToNotionID(database);
+    if (!dbID) {
+      console.error('Database ID is not valid');
+      return;
+    }
+
+    const columnname = options['column'];
+    if (!columnname) {
+      console.error('Column name is not valid');
+      return;
+    }
+
+    await sortMultiSelectOnDatabase(dbID, columnname);
   });
 
 // Parse command line arguments and execute the action

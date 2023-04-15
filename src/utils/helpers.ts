@@ -47,3 +47,14 @@ export const parseToNotionID = (input: string) => {
 
   return input;
 };
+
+/**
+ * Get page title from a Notion page
+ * @param page The Notion page
+ * @returns The title of the page
+ */
+export const getPageTitle = (page: any) => {
+  if (page.properties.Name.type == 'title') {
+    return page.properties.Name.title[0].plain_text;
+  }
+};

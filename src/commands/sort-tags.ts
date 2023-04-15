@@ -1,10 +1,10 @@
 import { Client } from '@notionhq/client';
-import { input } from '../utils/helpers';
-import loadConfig from '../utils/config';
 import {
   PageObjectResponse,
   SelectPropertyResponse,
 } from '@notionhq/client/build/src/api-endpoints';
+import loadConfig from '../utils/config';
+import { getPageTitle, input } from '../utils/helpers';
 
 // Ensure that the environment variables are loaded
 loadConfig();
@@ -17,7 +17,7 @@ export enum SortMode {
 // Initialize a new Notion client instance
 const notion = new Client({ auth: process.env.NOTION_API_TOKEN });
 
-const sortMultiSelectDefault = async (
+export const sortMultiSelectDefault = async (
   page: PageObjectResponse,
   columnName: string,
   sortedOptions: SelectPropertyResponse[]
@@ -38,7 +38,7 @@ const sortMultiSelectDefault = async (
   return notion.pages.update({
     page_id: page.id,
     properties: {
-      Tags: {
+      [columnName]: {
         type: 'multi_select',
         multi_select: tags.multi_select,
       },
@@ -46,7 +46,7 @@ const sortMultiSelectDefault = async (
   });
 };
 
-const sortMultiSelectAlpha = async (
+export const sortMultiSelectAlpha = async (
   page: PageObjectResponse,
   columnName: string
 ) => {
@@ -61,9 +61,47 @@ const sortMultiSelectAlpha = async (
   return notion.pages.update({
     page_id: page.id,
     properties: {
-      Tags: {
+      [columnName]: {
         type: 'multi_select',
         multi_select: tags.multi_select,
+      },
+    },
+  });
+};
+
+export const sortMultiSelectOnDatabase = async (
+  databaseId: string,
+  columnName: string
+) => {
+  const db = await notion.databases.retrieve({ database_id: databaseId });
+
+  while (true) {
+    const response = await input(
+      `Is this the correct database: "${db.title[0].plain_text}" y/n? > `
+    );
+    if (response.toLowerCase() == 'y') {
+      break;
+    } else if (response.toLowerCase() == 'n') {
+      process.exit(0);
+    }
+  }
+
+  const tags = db.properties[columnName];
+  if (!tags || tags.type !== 'multi_select' || !tags.multi_select) {
+    console.error('Tags property not found or not a multi-select property.');
+    return;
+  }
+
+  tags.multi_select.options.sort((a, b) => a.name.localeCompare(b.name));
+
+  return await notion.databases.update({
+    database_id: db.id,
+    properties: {
+      [columnName]: {
+        type: 'multi_select',
+        multi_select: {
+          options: tags.multi_select.options,
+        },
       },
     },
   });
@@ -87,16 +125,18 @@ export const sortMultiSelectOnDatabaseEntries = async (
     }
   }
 
-  const query = await notion.databases.query({ database_id: databaseId });
+  console.log('Fetching all entries from the database...');
+  let query = await notion.databases.query({ database_id: databaseId });
   const entries = [...query.results];
 
   while (query.has_more && query.next_cursor) {
-    const moreEntries = await notion.databases.query({
+    query = await notion.databases.query({
       database_id: databaseId,
       start_cursor: query.next_cursor,
     });
-    entries.push(...moreEntries.results);
+    entries.push(...query.results);
   }
+  console.log(`Found ${entries.length} entries in the database.`);
 
   const promises = [];
   switch (sortMode) {
@@ -109,18 +149,43 @@ export const sortMultiSelectOnDatabaseEntries = async (
       const options = column.multi_select.options;
 
       // Sort the tags according to the order of the options
-      promises.push(
-        entries.map((entry) =>
-          sortMultiSelectDefault(entry, columnName, options)
-        )
-      );
+      for (const entry of entries) {
+        const pageName = getPageTitle(entry);
+        console.log(`Updating page: ${pageName}`);
+
+        const promise = sortMultiSelectDefault(entry, columnName, options)
+          .then(() => {
+            console.log(`Updated page: ${pageName}`);
+          })
+          .catch((err) => {
+            console.error('Failed to update page:');
+            console.error(JSON.stringify(entry, null, 2));
+            console.error(err);
+          });
+
+        promises.push(promise);
+      }
       break;
 
     case SortMode.Alphabetical:
       // Sort the tags alphabetically
-      promises.push(
-        entries.map((entry) => sortMultiSelectAlpha(entry, columnName))
-      );
+
+      for (const entry of entries) {
+        const pageName = getPageTitle(entry);
+        console.log(`Updating page: ${pageName}`);
+
+        const promise = sortMultiSelectAlpha(entry, columnName)
+          .then(() => {
+            console.log(`Updated page: ${pageName}`);
+          })
+          .catch((err) => {
+            console.error('Failed to update page:');
+            console.error(JSON.stringify(entry, null, 2));
+            console.error(err);
+          });
+
+        promises.push(promise);
+      }
       break;
   }
 
