@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import loadConfig from './utils/config';
 import {
@@ -29,8 +31,8 @@ program
     'default'
   )
   .option(
-    '-c, --column <columnname>',
-    'The name of the column that you want sorted. Defaults to "Tags"',
+    '-f, --field <fieldname>',
+    'The name of the field that you want sorted. Defaults to "Tags"',
     'Tags'
   )
   .action(async (database: string, options: any) => {
@@ -53,13 +55,13 @@ program
         return;
     }
 
-    const columnname = options['column'];
-    if (!columnname) {
+    const fieldname = options['column'];
+    if (!fieldname) {
       console.error('Column name is not valid');
       return;
     }
 
-    await sortMultiSelectOnDatabaseEntries(dbID, columnname, sortMode);
+    await sortMultiSelectOnDatabaseEntries(dbID, fieldname, sortMode);
   });
 
 /**
@@ -72,7 +74,7 @@ program
     'Sorts the multiselect tags on your notion database in alphabetical order'
   )
   .option(
-    '-c, --column <columnname>',
+    '-f, --field <fieldname>',
     'The name of the column that you want sorted. Defaults to "Tags"',
     'Tags'
   )
@@ -83,13 +85,13 @@ program
       return;
     }
 
-    const columnname = options['column'];
-    if (!columnname) {
+    const fieldname = options['column'];
+    if (!fieldname) {
       console.error('Column name is not valid');
       return;
     }
 
-    await sortMultiSelectOnDatabase(dbID, columnname);
+    await sortMultiSelectOnDatabase(dbID, fieldname);
   });
 
 // Parse command line arguments and execute the action

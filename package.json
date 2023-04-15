@@ -2,12 +2,13 @@
   "name": "notion-cli",
   "version": "1.0.0",
   "description": "Interact with my Notion workspace using the command line",
-  "main": "nocli.js",
+  "main": "./dist/nocli.js",
   "scripts": {
     "test": "jest --coverage",
     "start": "tsc && node dist/nocli.js",
-    "build": "tsc"
+    "build": "tsc && pkg ."
   },
+  "bin": "./dist/nocli.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/albznw/notion-cli.git"
