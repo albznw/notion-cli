@@ -24,6 +24,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@notionhq/client": "^2.2.4",
     "commander": "^10.0.0"
   }
 }
